@@ -54,17 +54,13 @@ hasValidIndentation (OldIndSize n) s = (countPrefixSpaces s) `mod` n == 0
 hasInvalidIndentation :: OldIndSize -> String -> Bool
 hasInvalidIndentation oldSize s = not $ hasValidIndentation oldSize s
 
-invalidLineNums :: String -> OldIndSize -> Maybe InvalidLineNumbers
-invalidLineNums s oldSize = case invalidLineNums of
-    [] -> Nothing
-    nums -> Just nums
+invalidLineNums :: String -> OldIndSize -> InvalidLineNumbers
+invalidLineNums s oldSize = fmap fst $ filter snd lineNumsAndStatuses
   where
     statuses :: [Bool]
     statuses = fmap (hasInvalidIndentation oldSize) (lines s)
     lineNumsAndStatuses :: [(Int, Bool)]
     lineNumsAndStatuses = zip [1..] statuses
-    invalidLineNums :: [Int]
-    invalidLineNums = fmap fst $ filter snd lineNumsAndStatuses
 
 changeIndentation :: String
                   -> OldIndSize
@@ -72,9 +68,9 @@ changeIndentation :: String
                   -> Either InvalidLineNumbers String
 changeIndentation s oldSize newSize =
     case invalidLineNums s oldSize of
-        Just lineNums -> Left lineNums
-        Nothing -> Right . unlines $
+        [] -> Right . unlines $
             fmap (changeLineIndentation oldSize newSize) (lines s)
+        invalidLineNums -> Left invalidLineNums
 
 changeLineIndentation :: OldIndSize -> NewIndSize -> String -> String
 changeLineIndentation (OldIndSize oldSize) (NewIndSize newSize) s =
