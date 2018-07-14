@@ -1,6 +1,6 @@
 # Source Code Indenter
 
-## Installation
+## Building
 
 1. Install Haskell Cabal.
 1. Clone this repo.
@@ -13,4 +13,4 @@ To change a 2-space indented file to a 4-space indented file:
 
 ```> indenter SomeFile.java OutputFile.java 2 4```
 
-If any lines have unexpected amounts of indentation, ```indenter``` will notify which lines are affected.
+If any lines have unexpected amounts of indentation, ```indenter``` will not create the output file. Instead, it will print the lines numbers of the lines with unexpected amounts of indentation.
